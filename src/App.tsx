@@ -6,8 +6,6 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-
-      {/* Cada ruta carga la tabla AUTOMÁTICAMENTE */}
       <Route
         path="/usuarios"
         element={<TablePage title="Usuarios" path="/api/usuarios" />}
