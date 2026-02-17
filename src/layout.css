@@ -6,35 +6,35 @@ body {
 
 /* LAYOUT */
 .layout {
+  min-height: 100vh;
+  background: #0b2a3f; /* azul oscuro del fondo */
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
 /* TOPBAR */
 .topbar {
-  background: #123b5d;
+  height: 56px;
+  background: #0f3a57;
   color: white;
-  padding: 15px 25px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
 }
 
 /* BODY */
 .body {
-  display: flex;
   flex: 1;
+  display: flex;
 }
 
 /* SIDEBAR */
 .sidebar {
-  width: 220px;
-  background: #0f3057;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+   width: 240px;
+  background: #0c2f49;
+  padding: 14px 12px;
+  color: rgba(255,255,255,0.9);
 }
 
 .menu-title {
@@ -44,11 +44,13 @@ body {
 }
 
 .sidebar a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.92);
   text-decoration: none;
-  color: white;
-  padding: 10px;
-  border-radius: 6px;
-  transition: 0.2s;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
 
 .sidebar a:hover {
@@ -56,15 +58,28 @@ body {
 }
 
 .sidebar .active {
-  background: #1e6ea7;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.12);
 }
 
 /* CONTENT */
-.content {
-  padding: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+.content{
+  flex: 1;
+  padding: 18px;               /* margen como en tu “como lo quiero” */
+}
+
+/* ✅ Panel blanco/gris claro que llena TODO el área derecha */
+.content-surface{
+  width: 100%;
+  height: calc(100vh - 56px - 44px - 36px); 
+  /* 56 topbar, 44 padding aprox, 36 footer aprox -> ajustable si quieres */
+  min-height: 520px;
+
+  background: #f3f5f7;          /* gris claro como tu mock */
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;           /* casi cuadrado */
+  padding: 22px;
+  overflow: auto;
 }
 
 /* CONTENEDOR BLANCO GRANDE */
@@ -74,10 +89,12 @@ body {
 
 /* FOOTER */
 .footer {
-  background: #123b5d;
-  color: white;
-  text-align: center;
-  padding: 10px;
+  height: 36px;
+  background: #0f3a57;
+  color: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
 }
 

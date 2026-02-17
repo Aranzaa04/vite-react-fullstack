@@ -35,7 +35,9 @@ export default function AppLayout() {
         </aside>
 
         <main className="content">
+          <div className="content-surface">
             <Outlet />
+          </div>
         </main>
       </div>
 
