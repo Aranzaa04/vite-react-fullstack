@@ -65,20 +65,22 @@ body {
 /* CONTENT */
 .content{
   flex: 1;
-  padding: 18px;               /* margen como en tu “como lo quiero” */
+  padding: 0;              /* ❌ quitamos padding */
+  background: #0b2a3f;     /* fondo azul detrás */
 }
 
-/* ✅ Panel blanco/gris claro que llena TODO el área derecha */
+/* PANEL BLANCO QUE OCUPA TODO */
 .content-surface{
   width: 100%;
-  height: calc(100vh - 56px - 44px - 36px); 
-  /* 56 topbar, 44 padding aprox, 36 footer aprox -> ajustable si quieres */
-  min-height: 520px;
+  min-height: calc(100vh - 56px - 36px); 
+  /* 56 = header, 36 = footer */
 
-  background: #f3f5f7;          /* gris claro como tu mock */
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 6px;           /* casi cuadrado */
-  padding: 22px;
+  background: #f5f6f8;     /* blanco/gris claro */
+  border-radius: 0;        /* ❌ sin bordes redondos */
+  border: none;            /* ❌ sin borde */
+  padding: 28px;           /* padding interno cómodo */
+  box-shadow: none;        /* ❌ sin sombra */
+
   overflow: auto;
 }
 
