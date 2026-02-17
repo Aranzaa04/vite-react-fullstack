@@ -61,20 +61,15 @@ body {
 
 /* CONTENT */
 .content {
-  flex: 1;
-  padding: 40px;
+  padding: 28px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 /* CONTENEDOR BLANCO GRANDE */
 .content-card {
-  background: #f2f4f7;
-  width: 95%;
-  padding: 30px;
-  border-radius: 40px;
-  min-height: 80%;
+/*lo quito*/
 }
 
 /* FOOTER */
@@ -84,4 +79,13 @@ body {
   text-align: center;
   padding: 10px;
   font-size: 12px;
+}
+
+.panel{
+  width: min(1400px, 100%);
+  min-height: calc(100vh - 180px); /* ajusta el alto visible */
+  background: #f5f6f8;
+  border-radius: 50px;
+  padding: 44px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
 }

@@ -61,7 +61,7 @@ export default function TablePage({ title, path }: Props) {
   }, [path]);
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="panel">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
         <div>
           <h1 style={{ marginTop: 0, marginBottom: 6 }}>{title}</h1>
@@ -75,7 +75,7 @@ export default function TablePage({ title, path }: Props) {
         </div>
       </div>
 
-      <div style={{ marginTop: 16, background: "white", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 16, padding: 16 }}>
+      <div style={{ marginTop: 18, background: "transparent", padding: 0 }}>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <input
             value={query}
