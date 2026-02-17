@@ -5,7 +5,7 @@ export default function AppLayout() {
   return (
     <div className="layout">
       <header className="topbar">
-        <div style={{ fontWeight: 700, fontSize: 18 }}>Inventory System</div>
+        <div style={{ fontWeight: 700, fontSize: 18 }}>ShokUp</div>
         <div style={{ opacity: 0.85 }}>👤 Admin</div>
       </header>
 
@@ -31,6 +31,10 @@ export default function AppLayout() {
 
           <NavLink to="/detalle-venta" className={({ isActive }) => (isActive ? "active" : "")}>
             🛒 Venta
+          </NavLink>
+
+          <NavLink to="/usuarios" className={({ isActive }) => (isActive ? "active" : "")}>
+            OTRO MAS
           </NavLink>
         </aside>
 
