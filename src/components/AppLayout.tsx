@@ -6,7 +6,7 @@ export default function AppLayout() {
     <div className="layout">
       <header className="topbar">
         <div style={{ fontWeight: 700, fontSize: 18 }}>Inventory System</div>
-        <div style={{ opacity: 0.85 }}>👤 Admin</div>
+        <div style={{ opacity: 0.85 }}> Admin</div>
       </header>
 
       <div className="body">
@@ -14,23 +14,23 @@ export default function AppLayout() {
           <div className="menu-title">MENÚ</div>
 
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
-            🏠 Dashboard
+             Dashboard
           </NavLink>
 
           <NavLink to="/ventas" className={({ isActive }) => (isActive ? "active" : "")}>
-            🧾 Ventas
+             Ventas
           </NavLink>
 
           <NavLink to="/producto" className={({ isActive }) => (isActive ? "active" : "")}>
-            📦 Productos
+             Productos
           </NavLink>
 
           <NavLink to="/usuarios" className={({ isActive }) => (isActive ? "active" : "")}>
-            👤 Usuarios
+             Usuarios
           </NavLink>
 
           <NavLink to="/detalle-venta" className={({ isActive }) => (isActive ? "active" : "")}>
-            🧾📦 Detalle Venta
+             Detalle Venta
           </NavLink>
         </aside>
 
