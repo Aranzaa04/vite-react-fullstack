@@ -14,23 +14,23 @@ export default function AppLayout() {
           <div className="menu-title">MENÚ</div>
 
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
-            🏠 Dashboard
+            🏠 Inicio
           </NavLink>
 
           <NavLink to="/ventas" className={({ isActive }) => (isActive ? "active" : "")}>
-            🧾 Ventas
+            🛍️ Compra
           </NavLink>
 
           <NavLink to="/producto" className={({ isActive }) => (isActive ? "active" : "")}>
-            📦 Productos
+            📦 Inventario
           </NavLink>
 
           <NavLink to="/usuarios" className={({ isActive }) => (isActive ? "active" : "")}>
-            👤 Usuarios
+            🖥️ Proveedores
           </NavLink>
 
           <NavLink to="/detalle-venta" className={({ isActive }) => (isActive ? "active" : "")}>
-            🧾📦 Detalle Venta
+            🛒 Venta
           </NavLink>
         </aside>
 
