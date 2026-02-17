@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0d2b45;
+}
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  background: #123b5d;
+  color: white;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* BODY */
+.body {
+  display: flex;
+  flex: 1;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: #0f3057;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-title {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.sidebar a:hover {
+  background: #1e6ea7;
+}
+
+.sidebar .active {
+  background: #1e6ea7;
+}
+
+/* CONTENT */
+.content {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* CONTENEDOR BLANCO GRANDE */
+.content-card {
+  background: #f2f4f7;
+  width: 95%;
+  padding: 30px;
+  border-radius: 40px;
+  min-height: 80%;
+}
+
+/* FOOTER */
+.footer {
+  background: #123b5d;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+}
