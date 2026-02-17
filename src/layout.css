@@ -66,21 +66,19 @@ body {
 .content{
   flex: 1;
   padding: 0;              /* ❌ quitamos padding */
-  background: #0b2a3f;     /* fondo azul detrás */
+  background: #f5f6f8;     /* fondo azul detrás */
 }
 
 /* PANEL BLANCO QUE OCUPA TODO */
 .content-surface{
   width: 100%;
+  height: 100%;
   min-height: calc(100vh - 56px - 36px); 
-  /* 56 = header, 36 = footer */
-
-  background: #f5f6f8;     /* blanco/gris claro */
+  background: transparent;     /* transparente porque el blanco ya está en .content */
   border-radius: 0;        /* ❌ sin bordes redondos */
   border: none;            /* ❌ sin borde */
-  padding: 28px;           /* padding interno cómodo */
+  padding: 26px;           /* padding interno cómodo */
   box-shadow: none;        /* ❌ sin sombra */
-
   overflow: auto;
 }
 
