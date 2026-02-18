@@ -13,6 +13,10 @@ export default function AppLayout() {
         <aside className="sidebar">
           <div className="menu-title">MENÚ</div>
 
+          <NavLink to="/inventario" className={({ isActive }) => (isActive ? "active" : "")}>
+            📦 Inventario
+          </NavLink>
+
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
             🏠 Inicio
           </NavLink>
@@ -22,7 +26,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink to="/producto" className={({ isActive }) => (isActive ? "active" : "")}>
-            📦 Inventario
+            📦 Inventario1
           </NavLink>
 
           <NavLink to="/usuarios" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -45,7 +49,7 @@ export default function AppLayout() {
         </main>
       </div>
 
-      <footer className="footer">© 2026 Inventory System — Proyecto Académico</footer>
+      <footer className="footer">© 2026 ShockUp — Proyecto Académico</footer>
     </div>
   );
 }
