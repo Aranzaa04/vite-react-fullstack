@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 type InventarioRow = {
   id: number;
   tipo: string;
-  peso: number;
+  // peso: number; // ✅ quitado
   precio: number;
   cantidad: number;
 };
@@ -26,7 +26,7 @@ export default function InventarioCrudPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const [tipo, setTipo] = useState("");
-  const [peso, setPeso] = useState("");
+  // const [peso, setPeso] = useState(""); // ✅ quitado
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
 
@@ -57,7 +57,6 @@ export default function InventarioCrudPage() {
     setMode("create");
     setEditingId(null);
     setTipo("");
-    setPeso("");
     setPrecio("");
     setCantidad("");
     setOpen(true);
@@ -67,7 +66,6 @@ export default function InventarioCrudPage() {
     setMode("edit");
     setEditingId(r.id);
     setTipo(r.tipo ?? "");
-    setPeso(String(r.peso ?? 0));
     setPrecio(String(r.precio ?? 0));
     setCantidad(String(r.cantidad ?? 0));
     setOpen(true);
@@ -78,7 +76,6 @@ export default function InventarioCrudPage() {
 
     const payload = {
       tipo: tipo.trim(),
-      peso: toNumber(peso),
       precio: toNumber(precio),
       cantidad: toNumber(cantidad),
     };
@@ -171,7 +168,7 @@ export default function InventarioCrudPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 800 }}>
             <thead>
               <tr>
-                {["id", "tipo", "peso", "precio", "cantidad", "acciones"].map((c) => (
+                {["id", "tipo", "precio", "cantidad", "acciones"].map((c) => (
                   <th key={c} style={{ textAlign: "left", padding: 10, borderBottom: "1px solid rgba(0,0,0,0.12)" }}>
                     {c}
                   </th>
@@ -184,7 +181,6 @@ export default function InventarioCrudPage() {
                 <tr key={r.id}>
                   <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{r.id}</td>
                   <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{r.tipo}</td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{r.peso}</td>
                   <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{r.precio}</td>
                   <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{r.cantidad}</td>
                   <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
@@ -221,7 +217,7 @@ export default function InventarioCrudPage() {
 
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ padding: 12, opacity: 0.75 }}>
+                  <td colSpan={5} style={{ padding: 12, opacity: 0.75 }}>
                     No hay datos. Presiona <b>Agregar</b> para crear el primero.
                   </td>
                 </tr>
@@ -268,16 +264,6 @@ export default function InventarioCrudPage() {
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value)}
                   placeholder="Ej: Gorra"
-                  style={{ width: "100%", marginTop: 6, padding: "10px 12px", borderRadius: 12, border: "1px solid rgba(0,0,0,0.15)" }}
-                />
-              </label>
-
-              <label>
-                Peso
-                <input
-                  value={peso}
-                  onChange={(e) => setPeso(e.target.value)}
-                  placeholder="Ej: 0.2"
                   style={{ width: "100%", marginTop: 6, padding: "10px 12px", borderRadius: 12, border: "1px solid rgba(0,0,0,0.15)" }}
                 />
               </label>
