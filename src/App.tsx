@@ -3,16 +3,20 @@ import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import TablePage from "./pages/TablePage";
 import InventarioCrudPage from "./pages/InventarioCrudPage";
+import VentaPage from "./pages/VentaPage";
 
 export default function App() {
   return (
     <Routes>
+      {/* Layout principal */}
       <Route element={<AppLayout />}>
+        {/* Dashboard */}
         <Route index element={<Dashboard />} />
 
+        {/* Tablas clásicas */}
         <Route
           path="ventas"
-          element={<TablePage title="Ventas" path="/api/ventas" />}
+          element={<TablePage title="Ventas" path="/api/venta" />}
         />
 
         <Route
@@ -30,15 +34,21 @@ export default function App() {
           element={<TablePage title="Detalle Venta" path="/api/detalle_venta" />}
         />
 
-        {/* 👉 NUEVA RUTA INVENTARIO CRUD */}
+        {/* 👉 INVENTARIO (CRUD) */}
         <Route
           path="inventario"
           element={<InventarioCrudPage />}
         />
+
+        {/* 👉 VENTA TIPO SUPERMERCADO */}
+        <Route
+          path="venta"
+          element={<VentaPage />}
+        />
       </Route>
 
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
-
