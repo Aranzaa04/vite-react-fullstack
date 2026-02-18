@@ -13,6 +13,12 @@ export default function App() {
         {/* Dashboard */}
         <Route index element={<Dashboard />} />
 
+        {/* Página de Compra / Venta estilo supermercado */}
+        <Route
+          path="compra"
+          element={<VentaPage />}
+        />
+
         {/* Tablas clásicas */}
         <Route
           path="ventas"

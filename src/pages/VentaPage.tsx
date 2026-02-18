@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Producto = {
   id: number;
@@ -7,137 +7,122 @@ type Producto = {
   cantidad: number;
 };
 
-type ItemCarrito = Producto & {
-  qty: number;
+type CompraItem = {
+  producto_id: number;
+  tipo: string;
+  precio: number;
+  cantidad: number;
+  subtotal: number;
 };
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 export default function VentaPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [compra, setCompra] = useState<CompraItem[]>([]);
+  const [err, setErr] = useState("");
 
-  // cargar inventario
-  useEffect(() => {
-    fetch(`${API_URL}/api/inventario`)
-      .then(res => res.json())
-      .then(data => setProductos(data))
-      .catch(() => setMsg("Error al cargar inventario"));
-  }, []);
+  const endpointInventario = useMemo(() => `${API_URL}/api/inventario`, []);
 
-  function agregarProducto(p: Producto) {
-    setCarrito(prev => {
-      const existe = prev.find(i => i.id === p.id);
-      if (existe) {
-        return prev.map(i =>
-          i.id === p.id ? { ...i, qty: i.qty + 1 } : i
-        );
-      }
-      return [...prev, { ...p, qty: 1 }];
-    });
-  }
-
-  function quitarProducto(id: number) {
-    setCarrito(prev =>
-      prev
-        .map(i => (i.id === id ? { ...i, qty: i.qty - 1 } : i))
-        .filter(i => i.qty > 0)
-    );
-  }
-
-  const total = carrito.reduce(
-    (sum, i) => sum + i.precio * i.qty,
-    0
-  );
-
-  async function pagar() {
-    setLoading(true);
-    setMsg("");
-
+  // Cargar inventario
+  async function loadInventario() {
     try {
-      const res = await fetch(`${API_URL}/api/venta/checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: carrito.map(i => ({
-            producto_id: i.id,
-            cantidad: i.qty,
-            precio_unitario: i.precio,
-          })),
-        }),
-      });
-
+      const res = await fetch(endpointInventario);
       if (!res.ok) throw new Error(await res.text());
-
-      setCarrito([]);
-      setMsg("✅ Venta realizada correctamente");
+      const data = await res.json();
+      setProductos(data);
     } catch (e: any) {
-      setMsg(e.message || "Error al procesar venta");
-    } finally {
-      setLoading(false);
+      setErr(e?.message || "Error al cargar inventario");
     }
   }
 
+  useEffect(() => {
+    loadInventario();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Agregar producto al carrito
+  function agregarProducto(p: Producto) {
+    setCompra((prev) => {
+      const existe = prev.find((i) => i.producto_id === p.id);
+      if (existe) {
+        // si ya existe, aumenta cantidad
+        return prev.map((i) =>
+          i.producto_id === p.id
+            ? { ...i, cantidad: i.cantidad + 1, subtotal: (i.cantidad + 1) * i.precio }
+            : i
+        );
+      }
+      return [
+        ...prev,
+        { producto_id: p.id, tipo: p.tipo, precio: p.precio, cantidad: 1, subtotal: p.precio },
+      ];
+    });
+  }
+
+  // Eliminar producto del carrito
+  function eliminarProducto(id: number) {
+    setCompra((prev) => prev.filter((i) => i.producto_id !== id));
+  }
+
+  // Total de la compra
+  const total = compra.reduce((acc, i) => acc + i.subtotal, 0);
+
   return (
     <div className="panel">
-      <h1>Venta</h1>
-      <p>Selecciona productos para agregar al carrito</p>
+      <h1>Compra</h1>
+      {err && <div style={{ color: "red" }}>{err}</div>}
 
-      {/* PRODUCTOS */}
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-        {productos.map(p => (
+      <h2>Productos disponibles</h2>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+        {productos.map((p) => (
           <button
             key={p.id}
             onClick={() => agregarProducto(p)}
-            style={{
-              padding: 16,
-              minWidth: 140,
-              borderRadius: 12,
-              border: "1px solid rgba(0,0,0,0.15)",
-              background: "white",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
+            style={{ padding: "8px 12px", borderRadius: 8, cursor: "pointer" }}
           >
-            {p.tipo}<br />
-            <span style={{ opacity: 0.7 }}>${p.precio}</span>
+            {p.tipo} - ${p.precio.toFixed(2)}
           </button>
         ))}
       </div>
 
-      {/* CARRITO */}
-      <h2 style={{ marginTop: 24 }}>Carrito</h2>
+      <h2>Carrito de compra</h2>
+      {compra.length === 0 && <p>No hay productos agregados.</p>}
+      {compra.length > 0 && (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: "left", padding: 8 }}>Producto</th>
+              <th style={{ textAlign: "right", padding: 8 }}>Precio</th>
+              <th style={{ textAlign: "center", padding: 8 }}>Cantidad</th>
+              <th style={{ textAlign: "right", padding: 8 }}>Subtotal</th>
+              <th style={{ padding: 8 }}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compra.map((c) => (
+              <tr key={c.producto_id}>
+                <td style={{ padding: 8 }}>{c.tipo}</td>
+                <td style={{ padding: 8, textAlign: "right" }}>${c.precio.toFixed(2)}</td>
+                <td style={{ padding: 8, textAlign: "center" }}>{c.cantidad}</td>
+                <td style={{ padding: 8, textAlign: "right" }}>${c.subtotal.toFixed(2)}</td>
+                <td style={{ padding: 8 }}>
+                  <button
+                    onClick={() => eliminarProducto(c.producto_id)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-      {carrito.length === 0 && <p>No hay productos</p>}
-
-      {carrito.map(i => (
-        <div key={i.id} style={{ display: "flex", gap: 10, marginBottom: 6 }}>
-          <div style={{ flex: 1 }}>
-            {i.tipo} × {i.qty}
-          </div>
-          <div>${i.precio * i.qty}</div>
-          <button onClick={() => quitarProducto(i.id)}>➖</button>
-        </div>
-      ))}
-
-      <h3>Total: ${total}</h3>
-
-      <button
-        onClick={pagar}
-        disabled={loading || carrito.length === 0}
-        style={{
-          marginTop: 12,
-          padding: "12px 18px",
-          borderRadius: 12,
-          fontWeight: 700,
-        }}
-      >
-        💳 Pagar
-      </button>
-
-      {msg && <p style={{ marginTop: 12 }}>{msg}</p>}
+      {compra.length > 0 && (
+        <h3 style={{ marginTop: 12 }}>Total: ${total.toFixed(2)}</h3>
+      )}
     </div>
   );
 }
