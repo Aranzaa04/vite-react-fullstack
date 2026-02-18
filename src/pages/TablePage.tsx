@@ -20,35 +20,15 @@ export default function TablePage({ title, path }: Props) {
   const [err, setErr] = useState<string>("");
   const [query, setQuery] = useState("");
 
-  // 🔥 Ocultamos la columna "id"
-  const columns = useMemo(
-    () => toColumns(rows).filter((c) => c !== "id"),
-    [rows]
-  );
+  const columns = useMemo(() => toColumns(rows), [rows]);
 
   const filteredRows = useMemo(() => {
     if (!query.trim()) return rows;
     const q = query.toLowerCase();
     return rows.filter((r) =>
-      Object.values(r || {}).some((v) =>
-        String(v ?? "").toLowerCase().includes(q)
-      )
+      Object.values(r || {}).some((v) => String(v ?? "").toLowerCase().includes(q))
     );
   }, [rows, query]);
-
-  // 🔥 Función para formatear fecha
-  function formatearFecha(valor: any) {
-    if (!valor) return "";
-
-    const fecha = new Date(valor);
-    if (isNaN(fecha.getTime())) return valor;
-
-    return fecha.toLocaleDateString("es-MX", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -148,6 +128,7 @@ export default function TablePage({ title, path }: Props) {
         </div>
       </div>
 
+      {/* Estados */}
       {loading && <p style={{ marginTop: 8 }}>Cargando...</p>}
 
       {err && (
@@ -161,6 +142,7 @@ export default function TablePage({ title, path }: Props) {
         </div>
       )}
 
+      {/* Tabla en tarjeta simple (NO redonda gigante) */}
       {!loading && !err && (
         <div
           style={{
@@ -200,9 +182,7 @@ export default function TablePage({ title, path }: Props) {
                           borderBottom: "1px solid rgba(0,0,0,0.06)",
                         }}
                       >
-                        {c === "creado_en"
-                          ? formatearFecha((r as any)?.[c])
-                          : String((r as any)?.[c] ?? "")}
+                        {String((r as any)?.[c] ?? "")}
                       </td>
                     ))}
                   </tr>
