@@ -16,7 +16,7 @@ export default function App() {
         {/* Tablas clásicas */}
         <Route
           path="ventas"
-          element={<TablePage title="Ventas" path="/api/ventas" />}
+          element={<TablePage title="Ventas" path="/api/venta" />}
         />
 
         <Route
