@@ -13,12 +13,12 @@ export default function AppLayout() {
         <aside className="sidebar">
           <div className="menu-title">MENÚ</div>
 
-          <NavLink to="/inventario" className={({ isActive }) => (isActive ? "active" : "")}>
-            📦 Inventario
-          </NavLink>
-
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
             🏠 Inicio
+          </NavLink>
+          
+          <NavLink to="/inventario" className={({ isActive }) => (isActive ? "active" : "")}>
+            📦 Inventario
           </NavLink>
 
           <NavLink to="/ventas" className={({ isActive }) => (isActive ? "active" : "")}>
