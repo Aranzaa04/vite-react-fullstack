@@ -1,19 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+iimport { useEffect, useMemo, useState } from "react";
 
-type Producto = {
-  id: number;
-  tipo: string;
-  precio: number;
-  cantidad: number;
-};
-
-type CompraItem = {
-  producto_id: number;
-  tipo: string;
-  precio: number;
-  cantidad: number;
-  subtotal: number;
-};
+type Producto = { id: number; tipo: string; precio: number; cantidad: number };
+type CompraItem = { producto_id: number; tipo: string; precio: number; cantidad: number; subtotal: number };
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -23,79 +11,48 @@ export default function VentaPage() {
   const [err, setErr] = useState("");
 
   const endpointInventario = useMemo(() => `${API_URL}/api/inventario`, []);
-  const endpointCompra = useMemo(() => `${API_URL}/api/venta`, []);
 
   // Cargar inventario
   async function loadInventario() {
     try {
       const res = await fetch(endpointInventario);
       if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      setProductos(data);
+      setProductos(await res.json());
     } catch (e: any) {
       setErr(e?.message || "Error al cargar inventario");
     }
   }
 
-  useEffect(() => {
-    loadInventario();
-  }, []);
+  useEffect(() => { loadInventario(); }, []);
 
   // Agregar producto al carrito
   function agregarProducto(p: Producto) {
-    setCompra((prev) => {
-      const existe = prev.find((i) => i.producto_id === p.id);
-      if (existe) {
-        return prev.map((i) =>
-          i.producto_id === p.id
-            ? { ...i, cantidad: i.cantidad + 1, subtotal: (i.cantidad + 1) * i.precio }
-            : i
-        );
-      }
-      return [
-        ...prev,
-        { producto_id: p.id, tipo: p.tipo, precio: p.precio, cantidad: 1, subtotal: p.precio },
-      ];
+    setCompra(prev => {
+      const existe = prev.find(i => i.producto_id === p.id);
+      if (existe) return prev.map(i => i.producto_id === p.id ? { ...i, cantidad: i.cantidad + 1, subtotal: (i.cantidad + 1) * i.precio } : i);
+      return [...prev, { producto_id: p.id, tipo: p.tipo, precio: p.precio, cantidad: 1, subtotal: p.precio }];
     });
   }
 
   // Eliminar producto del carrito
-  function eliminarProducto(id: number) {
-    setCompra((prev) => prev.filter((i) => i.producto_id !== id));
-  }
+  function eliminarProducto(id: number) { setCompra(prev => prev.filter(i => i.producto_id !== id)); }
 
-  // Total de la compra
+  // Total
   const total = compra.reduce((acc, i) => acc + i.subtotal, 0);
 
-  // Checkout
-  async function checkout() {
-    if (compra.length === 0) return alert("El carrito está vacío");
-
-    try {
-      const payload = {
-        total,
-        productos: compra.map((i) => ({
-          producto_id: i.producto_id,
-          cantidad: i.cantidad,
-          precio_unitario: i.precio,
-          subtotal: i.subtotal,
-        })),
-      };
-
-      const res = await fetch(endpointCompra + "/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      alert("Compra registrada con éxito");
-      setCompra([]);
-      loadInventario(); // recarga inventario para actualizar cantidades
-    } catch (e: any) {
-      setErr(e?.message || "Error al realizar la compra");
-    }
+  // Pagar
+  async function pagar() {
+    if (!compra.length) return;
+    const payload = { items: compra.map(c => ({ producto_id: c.producto_id, cantidad: c.cantidad })) };
+    const res = await fetch(`${API_URL}/api/compra`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) { alert(await res.text()); return; }
+    alert("Compra realizada!");
+    setCompra([]);
+    loadInventario();
   }
 
   return (
@@ -105,58 +62,40 @@ export default function VentaPage() {
 
       <h2>Productos disponibles</h2>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
-        {productos.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => agregarProducto(p)}
-            style={{ padding: "8px 12px", borderRadius: 8, cursor: "pointer" }}
-          >
+        {productos.map(p => (
+          <button key={p.id} onClick={() => agregarProducto(p)} style={{ padding: "8px 12px", borderRadius: 8, cursor: "pointer" }}>
             {p.tipo} - ${p.precio.toFixed(2)}
           </button>
         ))}
       </div>
 
-      <h2>Carrito de compra</h2>
+      <h2>Carrito</h2>
       {compra.length === 0 && <p>No hay productos agregados.</p>}
       {compra.length > 0 && (
-        <>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left", padding: 8 }}>Producto</th>
-                <th style={{ textAlign: "right", padding: 8 }}>Precio</th>
-                <th style={{ textAlign: "center", padding: 8 }}>Cantidad</th>
-                <th style={{ textAlign: "right", padding: 8 }}>Subtotal</th>
-                <th style={{ padding: 8 }}>Acciones</th>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compra.map(c => (
+              <tr key={c.producto_id}>
+                <td>{c.tipo}</td>
+                <td>${c.precio.toFixed(2)}</td>
+                <td>{c.cantidad}</td>
+                <td>${c.subtotal.toFixed(2)}</td>
+                <td><button onClick={() => eliminarProducto(c.producto_id)}>🗑️</button></td>
               </tr>
-            </thead>
-            <tbody>
-              {compra.map((c) => (
-                <tr key={c.producto_id}>
-                  <td style={{ padding: 8 }}>{c.tipo}</td>
-                  <td style={{ padding: 8, textAlign: "right" }}>${c.precio.toFixed(2)}</td>
-                  <td style={{ padding: 8, textAlign: "center" }}>{c.cantidad}</td>
-                  <td style={{ padding: 8, textAlign: "right" }}>${c.subtotal.toFixed(2)}</td>
-                  <td style={{ padding: 8 }}>
-                    <button
-                      onClick={() => eliminarProducto(c.producto_id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      🗑️
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-          <h3 style={{ marginTop: 12 }}>Total: ${total.toFixed(2)}</h3>
-          <button
-            onClick={checkout}
-            style={{ padding: "10px 16px", borderRadius: 12, cursor: "pointer", marginTop: 10 }}
-          >
-            Finalizar Compra
-          </button>
+      {compra.length > 0 && (
+        <>
+          <h3>Total: ${total.toFixed(2)}</h3>
+          <button onClick={pagar} style={{ marginTop: 10, padding: "8px 12px" }}>💳 Pagar</button>
         </>
       )}
     </div>
