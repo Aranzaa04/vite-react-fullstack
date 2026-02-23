@@ -1,4 +1,4 @@
-iimport { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Producto = { id: number; tipo: string; precio: number; cantidad: number };
 type CompraItem = { producto_id: number; tipo: string; precio: number; cantidad: number; subtotal: number };

@@ -1,15 +1,26 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
+import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
 import TablePage from "./pages/TablePage";
 import InventarioCrudPage from "./pages/InventarioCrudPage";
 import VentaPage from "./pages/VentaPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export default function App() {
   return (
     <Routes>
-      {/* Layout principal */}
-      <Route element={<AppLayout />}>
+      {/* Ruta de Login (pública) */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Layout principal (protegido) */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
+      >
         {/* Dashboard */}
         <Route index element={<Dashboard />} />
 

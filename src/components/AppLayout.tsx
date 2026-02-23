@@ -1,12 +1,37 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../layout.css";
 
 export default function AppLayout() {
+  const { usuario, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <div className="layout">
       <header className="topbar">
         <div style={{ fontWeight: 700, fontSize: 18 }}>ShokUp</div>
-        <div style={{ opacity: 0.85 }}>👤 Admin</div>
+        <div style={{ display: "flex", alignItems: "center", gap: "15px", opacity: 0.85 }}>
+          <span>👤 {usuario?.nombre || "Usuario"}</span>
+          <button
+            onClick={handleLogout}
+            style={{
+              background: "none",
+              border: "none",
+              color: "inherit",
+              cursor: "pointer",
+              fontSize: "14px",
+              textDecoration: "underline",
+              padding: "5px 10px",
+            }}
+          >
+            Cerrar Sesión
+          </button>
+        </div>
       </header>
 
       <div className="body">
