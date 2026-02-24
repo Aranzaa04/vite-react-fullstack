@@ -13,27 +13,23 @@ export default function AppLayout() {
         <aside className="sidebar">
           <div className="menu-title">MENÚ</div>
 
+              <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+            🏠 Inicio
+          </NavLink>
+
           <NavLink to="/inventario" className={({ isActive }) => (isActive ? "active" : "")}>
             📦 Inventario
           </NavLink>
 
-          <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
-            🏠 Inicio
-          </NavLink>
-
-          <NavLink to="/ventas" className={({ isActive }) => (isActive ? "active" : "")}>
+          <NavLink to="/compra" className={({ isActive }) => (isActive ? "active" : "")}>
             🛍️ Compra
-          </NavLink>
-
-          <NavLink to="/producto" className={({ isActive }) => (isActive ? "active" : "")}>
-            📦 Inventario1
           </NavLink>
 
           <NavLink to="/usuarios" className={({ isActive }) => (isActive ? "active" : "")}>
             🖥️ Usuarios
           </NavLink>
 
-          <NavLink to="/detalle-venta" className={({ isActive }) => (isActive ? "active" : "")}>
+          <NavLink to="/venta" className={({ isActive }) => (isActive ? "active" : "")}>
             🛒 Venta
           </NavLink>
 
