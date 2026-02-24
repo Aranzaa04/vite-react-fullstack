@@ -1,71 +1,33 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import AppLayout from "./components/AppLayout";
-import LoginPage from "./pages/LoginPage";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 import TablePage from "./pages/TablePage";
-import InventarioCrudPage from "./pages/InventarioCrudPage";
-import VentaPage from "./pages/VentaPage";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import Layout from "./components/AppLayout";
 
 export default function App() {
   return (
     <Routes>
-      {/* Ruta de Login (pública) */}
-      <Route path="/login" element={<LoginPage />} />
-
-      {/* Layout principal (protegido) */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      >
-        {/* Dashboard */}
-        <Route index element={<Dashboard />} />
-
-        {/* Página de Compra / Venta estilo supermercado */}
-        <Route
-          path="compra"
-          element={<VentaPage />}
-        />
-
-        {/* Tablas clásicas */}
-        <Route
-          path="ventas"
-          element={<TablePage title="Ventas" path="/api/venta" />}
-        />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
 
         <Route
-          path="producto"
-          element={<TablePage title="Producto" path="/api/producto" />}
-        />
-
-        <Route
-          path="usuarios"
+          path="/usuarios"
           element={<TablePage title="Usuarios" path="/api/usuarios" />}
         />
-
         <Route
-          path="detalle-venta"
-          element={<TablePage title="Detalle Venta" path="/api/detalle_venta" />}
+          path="/producto"
+          element={<TablePage title="Producto" path="/api/producto" />}
+        />
+        <Route
+          path="/ventas"
+          element={<TablePage title="Ventas" path="/api/ventas" />}
+        />
+        <Route
+          path="/proveedores"
+          element={<TablePage title="Proveedores" path="/api/proovedores" />}
         />
 
-        {/* 👉 INVENTARIO (CRUD) */}
-        <Route
-          path="inventario"
-          element={<InventarioCrudPage />}
-        />
-
-        {/* 👉 VENTA TIPO SUPERMERCADO */}
-        <Route
-          path="venta"
-          element={<VentaPage />}
-        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
-
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
