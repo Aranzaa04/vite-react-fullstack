@@ -37,11 +37,11 @@ export default function Home() {
         <p style={{ opacity: 0.85, marginTop: 6 }}>
           Vistas en tabla para que se entiendan mejor tus datos.
         </p>
-
-        <Link to="/ventas" style={linkStyle}>🧾 Ver Ventas (tabla)</Link>
-        <Link to="/producto" style={linkStyle}>📦 Ver Producto (tabla)</Link>
-        <Link to="/usuarios" style={linkStyle}>👤 Ver Usuarios (tabla)</Link>
+        
         <Link to="/inventario" style={linkStyle}>📦 Ver Inventario (tabla)</Link>
+        <Link to="/compra" style={linkStyle}>📦 Ver Compra (tabla)</Link>
+        <Link to="/usuarios" style={linkStyle}>👤 Ver Usuarios (tabla)</Link>
+        <Link to="/ventas" style={linkStyle}>🧾 Ver Ventas (tabla)</Link>
         <Link to="/proveedores" style={linkStyle}>🚚 Proveedores (tabla)</Link>
 
         <div style={{ marginTop: 14, fontSize: 13, opacity: 0.75 }}>

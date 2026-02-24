@@ -10,16 +10,20 @@ export default function App() {
         <Route path="/" element={<Home />} />
 
         <Route
+          path="/inventario"
+          element={<TablePage title="Inventario" path="/api/inventario" />}
+        />
+        <Route
+          path="/compra"
+          element={<TablePage title="Compra" path="/api/compra" />}
+        />
+        <Route
           path="/usuarios"
           element={<TablePage title="Usuarios" path="/api/usuarios" />}
         />
-        <Route
-          path="/producto"
-          element={<TablePage title="Producto" path="/api/producto" />}
-        />
-        <Route
-          path="/ventas"
-          element={<TablePage title="Ventas" path="/api/ventas" />}
+         <Route
+          path="/venta"
+          element={<TablePage title="Venta" path="/api/venta" />}
         />
         <Route
           path="/proveedores"
