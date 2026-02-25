@@ -27,7 +27,7 @@ export default function App() {
         />
         <Route
           path="/proveedores"
-          element={<TablePage title="Proveedores" path="/api/proovedores" />}
+          element={<TablePage title="Proveedores" path="/api/proveedores" />}
         />
 
         <Route path="*" element={<Navigate to="/" replace />} />
