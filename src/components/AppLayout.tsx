@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+﻿import { NavLink, Outlet } from "react-router-dom";
 import "../layout.css";
 
 export default function AppLayout() {
@@ -6,35 +6,35 @@ export default function AppLayout() {
     <div className="layout">
       <header className="topbar">
         <div style={{ fontWeight: 700, fontSize: 18 }}>StockUp</div>
-        <div style={{ opacity: 0.85 }}>👤 Admin</div>
+        <div style={{ opacity: 0.85 }}>ðŸ‘¤ Admin</div>
       </header>
 
       <div className="body">
         <aside className="sidebar">
-          <div className="menu-title">MENÚ</div>
+          <div className="menu-title">MENÃš</div>
 
-              <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
-            🏠 Inicio
+              <NavLink to="/home" end className={({ isActive }) => (isActive ? "active" : "")}>
+            ðŸ  Inicio
           </NavLink>
 
           <NavLink to="/inventario" className={({ isActive }) => (isActive ? "active" : "")}>
-            📦 Inventario
+            ðŸ“¦ Inventario
           </NavLink>
 
           <NavLink to="/compra" className={({ isActive }) => (isActive ? "active" : "")}>
-            🛍️ Compra
+            ðŸ›ï¸ Compra
           </NavLink>
 
           <NavLink to="/usuarios" className={({ isActive }) => (isActive ? "active" : "")}>
-            🖥️ Usuarios
+            ðŸ–¥ï¸ Usuarios
           </NavLink>
 
           <NavLink to="/venta" className={({ isActive }) => (isActive ? "active" : "")}>
-            🛒 Venta
+            ðŸ›’ Venta
           </NavLink>
 
           <NavLink to="/proveedores" className={({ isActive }) => (isActive ? "active" : "")}>
-          🚚 Proveedores
+          ðŸšš Proveedores
 
           </NavLink>
         </aside>
@@ -46,7 +46,8 @@ export default function AppLayout() {
         </main>
       </div>
 
-      <footer className="footer">© 2026 StockUp — Proyecto Académico</footer>
+      <footer className="footer">Â© 2026 StockUp â€” Proyecto AcadÃ©mico</footer>
     </div>
   );
 }
+

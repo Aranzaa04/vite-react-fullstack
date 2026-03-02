@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import TablePage from "./pages/TablePage";
 import Layout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
 export default function App() {
@@ -18,28 +19,33 @@ export default function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+        element={isAuthenticated ? <Navigate to="/home" replace /> : <LoginPage />}
       />
 
       <Route
-        path="/"
-        element={isAuthenticated ? <Layout /> : <Navigate to="/login" replace />}
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
       >
-        <Route index element={<Home />} />
+        <Route path="/home" element={<Home />} />
 
         <Route
-          path="inventario"
+          path="/inventario"
           element={<TablePage title="Inventario" path="/api/inventario" />}
         />
-        <Route path="compra" element={<TablePage title="Compra" path="/api/compra" />} />
-        <Route path="usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
-        <Route path="venta" element={<TablePage title="Venta" path="/api/venta" />} />
-        <Route path="proveedores" element={<TablePage title="Proveedores" path="/api/proveedores" />} />
+        <Route path="/compra" element={<TablePage title="Compra" path="/api/compra" />} />
+        <Route path="/usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
+        <Route path="/venta" element={<TablePage title="Venta" path="/api/venta" />} />
+        <Route path="/proveedores" element={<TablePage title="Proveedores" path="/api/proveedores" />} />
       </Route>
 
-      <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />} />
     </Routes>
   );
 }
