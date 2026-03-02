@@ -3,61 +3,43 @@ import Home from "./pages/Home";
 import TablePage from "./pages/TablePage";
 import Layout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
-import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
 export default function App() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <div>Cargando...</div>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route
         path="/login"
-        element={
-          isLoading ? (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-              <div>Cargando...</div>
-            </div>
-          ) : isAuthenticated ? (
-            <Navigate to="/" replace />
-          ) : (
-            <LoginPage />
-          )
-        }
+        element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
       />
 
       <Route
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
+        path="/"
+        element={isAuthenticated ? <Layout /> : <Navigate to="/login" replace />}
       >
-        <Route path="/" element={<Home />} />
+        <Route index element={<Home />} />
 
         <Route
-          path="/inventario"
+          path="inventario"
           element={<TablePage title="Inventario" path="/api/inventario" />}
         />
-        <Route
-          path="/compra"
-          element={<TablePage title="Compra" path="/api/compra" />}
-        />
-        <Route
-          path="/usuarios"
-          element={<TablePage title="Usuarios" path="/api/usuarios" />}
-        />
-         <Route
-          path="/venta"
-          element={<TablePage title="Venta" path="/api/venta" />}
-        />
-        <Route
-          path="/proveedores"
-          element={<TablePage title="Proveedores" path="/api/proveedores" />}
-        />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="compra" element={<TablePage title="Compra" path="/api/compra" />} />
+        <Route path="usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
+        <Route path="venta" element={<TablePage title="Venta" path="/api/venta" />} />
+        <Route path="proveedores" element={<TablePage title="Proveedores" path="/api/proveedores" />} />
       </Route>
+
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
     </Routes>
   );
 }
