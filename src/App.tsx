@@ -4,11 +4,27 @@ import TablePage from "./pages/TablePage";
 import Layout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 
 export default function App() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login"
+        element={
+          isLoading ? (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+              <div>Cargando...</div>
+            </div>
+          ) : isAuthenticated ? (
+            <Navigate to="/" replace />
+          ) : (
+            <LoginPage />
+          )
+        }
+      />
 
       <Route
         element={
