@@ -2,11 +2,21 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import TablePage from "./pages/TablePage";
 import Layout from "./components/AppLayout";
+import LoginPage from "./pages/LoginPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export default function App() {
   return (
     <Routes>
-      <Route element={<Layout />}>
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<Home />} />
 
         <Route
