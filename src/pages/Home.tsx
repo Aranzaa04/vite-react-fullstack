@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL as string;
+﻿import { Link } from "react-router-dom";
+import { API_URL } from "../config/api";
 
 const cardStyle: React.CSSProperties = {
   maxWidth: 920,
@@ -38,10 +37,10 @@ export default function Home() {
           Vistas en tabla para que se entiendan mejor tus datos.
         </p>
 
-        <Link to="/ventas" style={linkStyle}>🧾 Ver Ventas (tabla)</Link>
-        <Link to="/producto" style={linkStyle}>📦 Ver Producto (tabla)</Link>
-        <Link to="/usuarios" style={linkStyle}>👤 Ver Usuarios (tabla)</Link>
-        <Link to="/detalle-venta" style={linkStyle}>🧾📦 Ver Detalle Venta (tabla)</Link>
+        <Link to="/ventas" style={linkStyle}>Ver Ventas (tabla)</Link>
+        <Link to="/producto" style={linkStyle}>Ver Producto (tabla)</Link>
+        <Link to="/usuarios" style={linkStyle}>Ver Usuarios (tabla)</Link>
+        <Link to="/detalle-venta" style={linkStyle}>Ver Detalle Venta (tabla)</Link>
 
         <div style={{ marginTop: 14, fontSize: 13, opacity: 0.75 }}>
           API base: <code>{API_URL || "(no definido)"}</code>

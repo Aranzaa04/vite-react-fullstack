@@ -1,7 +1,6 @@
-import type { LoginRequest, RegisterRequest, AuthResponse, Usuario } from "../types/auth";
+Ôªøimport type { LoginRequest, RegisterRequest, AuthResponse, Usuario } from "../types/auth";
 
-const API_URL = import.meta.env.VITE_API_URL as string;
-const API_BASE_URL = `${API_URL}/api`;
+import { API_BASE_URL } from "../config/api";
 
 export const authService = {
   async register(data: RegisterRequest): Promise<AuthResponse> {
@@ -32,7 +31,7 @@ export const authService = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || "Error al iniciar sesiÛn");
+      throw new Error(error.error || "Error al iniciar sesi√≥n");
     }
 
     return response.json();
@@ -49,7 +48,7 @@ export const authService = {
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error("Token inv·lido o expirado");
+        throw new Error("Token inv√°lido o expirado");
       }
       throw new Error("Error al obtener datos del usuario");
     }
@@ -69,3 +68,4 @@ export const authService = {
     localStorage.removeItem("token");
   },
 };
+

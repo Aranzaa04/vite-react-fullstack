@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
+import { API_URL } from "../config/api";
 
 type InventarioRow = {
   id: number;
   tipo: string;
-  // peso: number; // ✅ quitado
+  // peso: number; // âœ… quitado
   precio: number;
   cantidad: number;
 };
-
-const API_URL = import.meta.env.VITE_API_URL as string;
 
 function toNumber(value: string) {
   const n = Number(value);
@@ -26,7 +25,7 @@ export default function InventarioCrudPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const [tipo, setTipo] = useState("");
-  // const [peso, setPeso] = useState(""); // ✅ quitado
+  // const [peso, setPeso] = useState(""); // âœ… quitado
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("");
 
@@ -36,7 +35,6 @@ export default function InventarioCrudPage() {
     setLoading(true);
     setErr("");
     try {
-      if (!API_URL) throw new Error("Falta VITE_API_URL en el .env del frontend");
       const res = await fetch(`${API_URL}/api/inventario`);
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
@@ -111,7 +109,7 @@ export default function InventarioCrudPage() {
   }
 
   async function onDelete(id: number) {
-    const ok = confirm("¿Seguro que quieres borrar este registro?");
+    const ok = confirm("Â¿Seguro que quieres borrar este registro?");
     if (!ok) return;
 
     setErr("");
@@ -149,7 +147,7 @@ export default function InventarioCrudPage() {
               fontWeight: 600,
             }}
           >
-            ➕ Agregar
+            âž• Agregar
           </button>
         </div>
       </div>
@@ -195,7 +193,7 @@ export default function InventarioCrudPage() {
                           cursor: "pointer",
                         }}
                       >
-                        ✏️ Editar
+                        âœï¸ Editar
                       </button>
 
                       <button
@@ -208,7 +206,7 @@ export default function InventarioCrudPage() {
                           cursor: "pointer",
                         }}
                       >
-                        🗑️ Borrar
+                        ðŸ—‘ï¸ Borrar
                       </button>
                     </div>
                   </td>
@@ -309,3 +307,6 @@ export default function InventarioCrudPage() {
     </div>
   );
 }
+
+
+
