@@ -8,7 +8,6 @@ type InventarioRow = {
   precio: number;
   cantidad: number;
 };
-
 function toNumber(value: string) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;

@@ -28,10 +28,11 @@ export default function Dashboard() {
           maxWidth: 520,
         }}
       >
-        <Link to="/ventas" style={linkStyle}>🧾 Ver Ventas (tabla)</Link>
-        <Link to="/producto" style={linkStyle}>📦 Ver Producto (tabla)</Link>
-        <Link to="/usuarios" style={linkStyle}>👤 Ver Usuarios (tabla)</Link>
-        <Link to="/detalle-venta" style={linkStyle}>🧾📦 Ver Detalle Venta (tabla)</Link>
+        <Link to="/inventario" style={linkStyle}> Ver Inventario (tabla)</Link>
+        <Link to="/compra" style={linkStyle}> Ver Compra (tabla)</Link>
+        <Link to="/usuarios" style={linkStyle}> Ver Usuarios (tabla)</Link>
+        <Link to="/venta" style={linkStyle}> Ver Venta (tabla)</Link>
+        <Link to="/proveedores" style={linkStyle}> Ver Proveedores (tabla)</Link>
       </div>
     </div>
   );
