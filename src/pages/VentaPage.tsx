@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
+import { API_URL } from "../config/api";
 
 type Producto = { id: number; tipo: string; precio: number; cantidad: number };
 type CompraItem = { producto_id: number; tipo: string; precio: number; cantidad: number; subtotal: number };
-
-const API_URL = import.meta.env.VITE_API_URL as string;
 
 export default function VentaPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -85,7 +84,7 @@ export default function VentaPage() {
                 <td>${c.precio.toFixed(2)}</td>
                 <td>{c.cantidad}</td>
                 <td>${c.subtotal.toFixed(2)}</td>
-                <td><button onClick={() => eliminarProducto(c.producto_id)}>🗑️</button></td>
+                <td><button onClick={() => eliminarProducto(c.producto_id)}>ðŸ—‘ï¸</button></td>
               </tr>
             ))}
           </tbody>
@@ -95,9 +94,11 @@ export default function VentaPage() {
       {compra.length > 0 && (
         <>
           <h3>Total: ${total.toFixed(2)}</h3>
-          <button onClick={pagar} style={{ marginTop: 10, padding: "8px 12px" }}>💳 Pagar</button>
+          <button onClick={pagar} style={{ marginTop: 10, padding: "8px 12px" }}>ðŸ’³ Pagar</button>
         </>
       )}
     </div>
   );
 }
+
+

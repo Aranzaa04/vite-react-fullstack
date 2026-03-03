@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
+import { API_URL } from "../config/api";
 
 type Props = {
   title: string;
   path: string; // ej: /api/usuarios
 };
-
-const API_URL = import.meta.env.VITE_API_URL as string;
 
 function toColumns(rows: any[]) {
   if (!rows || rows.length === 0) return [];
@@ -39,7 +38,6 @@ export default function TablePage({ title, path }: Props) {
       setRows([]);
 
       try {
-        if (!API_URL) throw new Error("Falta VITE_API_URL en el .env del frontend");
         const res = await fetch(`${API_URL}${path}`, { signal: controller.signal });
 
         if (!res.ok) {
@@ -91,7 +89,7 @@ export default function TablePage({ title, path }: Props) {
         </div>
       </div>
 
-      {/* Barra búsqueda */}
+      {/* Barra bÃºsqueda */}
       <div
         style={{
           display: "flex",
@@ -203,3 +201,6 @@ export default function TablePage({ title, path }: Props) {
     </div>
   );
 }
+
+
+

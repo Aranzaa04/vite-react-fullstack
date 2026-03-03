@@ -1,37 +1,64 @@
+// src/App.tsx
 import { Routes, Route, Navigate } from "react-router-dom";
+
+import AppLayout from "./components/AppLayout";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+
+// Páginas
+import LoginPage from "./pages/LoginPage";
 import Home from "./pages/Home";
+
+// Nuevas páginas
+import ProveedoresPage from "./pages/ProveedoresPage";
+import InventarioPage from "./pages/InventarioPage";
+import CompraPage from "./pages/CompraPage";
+import VentasPage from "./pages/VentasPage";
+
+// Usuarios (NO lo quitamos)
 import TablePage from "./pages/TablePage";
-import Layout from "./components/AppLayout";
+
+function isLoggedIn() {
+  return Boolean(localStorage.getItem("token"));
+}
 
 export default function App() {
+  const authed = isLoggedIn();
+
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
+      {/* ROOT */}
+      <Route path="/" element={<Navigate to={authed ? "/home" : "/login"} replace />} />
 
-        <Route
-          path="/inventario"
-          element={<TablePage title="Inventario" path="/api/inventario" />}
-        />
-        <Route
-          path="/compra"
-          element={<TablePage title="Compra" path="/api/compra" />}
-        />
-        <Route
-          path="/usuarios"
-          element={<TablePage title="Usuarios" path="/api/usuarios" />}
-        />
-         <Route
-          path="/venta"
-          element={<TablePage title="Venta" path="/api/venta" />}
-        />
-        <Route
-          path="/proveedores"
-          element={<TablePage title="Proveedores" path="/api/proveedores" />}
-        />
+      {/* LOGIN */}
+      <Route
+        path="/login"
+        element={authed ? <Navigate to="/home" replace /> : <LoginPage />}
+      />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+      {/* ÁREA PROTEGIDA */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/home" element={<Home />} />
+
+        {/* NUEVO */}
+        <Route path="/proveedores" element={<ProveedoresPage />} />
+        <Route path="/inventario" element={<InventarioPage />} />
+        <Route path="/compra" element={<CompraPage />} />
+        <Route path="/ventas" element={<VentasPage />} />
+
+        {/* USUARIOS (se conserva, sin endpoint para evitar error) */}
+        <Route path="/usuarios" element={<TablePage title="Usuarios" />} />
+        <Route path="/usuarios/nuevo" element={<TablePage title="Crear usuario" />} />
+        <Route path="/usuarios/roles" element={<TablePage title="Roles / Permisos" />} />
       </Route>
+
+      {/* 404 */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

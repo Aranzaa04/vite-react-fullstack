@@ -65,7 +65,7 @@ export default function LoginPage() {
         await register(formData.email, formData.password, formData.nombre);
       }
       // Redirigir al dashboard después del login/registro exitoso
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       // El error ya está en el contexto
       console.error(err);
