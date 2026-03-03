@@ -1,51 +1,64 @@
+// src/App.tsx
 import { Routes, Route, Navigate } from "react-router-dom";
-import Home from "./pages/Home";
-import TablePage from "./pages/TablePage";
-import Layout from "./components/AppLayout";
-import LoginPage from "./pages/LoginPage";
+
+import AppLayout from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { useAuth } from "./context/AuthContext";
+
+// Páginas
+import LoginPage from "./pages/LoginPage";
+import Home from "./pages/Home";
+
+// Nuevas páginas
+import ProveedoresPage from "./pages/ProveedoresPage";
+import InventarioPage from "./pages/InventarioPage";
+import CompraPage from "./pages/CompraPage";
+import VentasPage from "./pages/VentasPage";
+
+// Usuarios (NO lo quitamos)
+import TablePage from "./pages/TablePage";
+
+function isLoggedIn() {
+  return Boolean(localStorage.getItem("token"));
+}
 
 export default function App() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <div>Cargando...</div>
-      </div>
-    );
-  }
+  const authed = isLoggedIn();
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* ROOT */}
+      <Route path="/" element={<Navigate to={authed ? "/home" : "/login"} replace />} />
 
+      {/* LOGIN */}
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/home" replace /> : <LoginPage />}
+        element={authed ? <Navigate to="/home" replace /> : <LoginPage />}
       />
 
+      {/* ÁREA PROTEGIDA */}
       <Route
         element={
           <ProtectedRoute>
-            <Layout />
+            <AppLayout />
           </ProtectedRoute>
         }
       >
         <Route path="/home" element={<Home />} />
 
-        <Route
-          path="/inventario"
-          element={<TablePage title="Inventario" path="/api/inventario" />}
-        />
-        <Route path="/compra" element={<TablePage title="Compra" path="/api/compra" />} />
-        <Route path="/usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
-        <Route path="/venta" element={<TablePage title="Venta" path="/api/venta" />} />
-        <Route path="/proveedores" element={<TablePage title="Proveedores" path="/api/proveedores" />} />
+        {/* NUEVO */}
+        <Route path="/proveedores" element={<ProveedoresPage />} />
+        <Route path="/inventario" element={<InventarioPage />} />
+        <Route path="/compra" element={<CompraPage />} />
+        <Route path="/ventas" element={<VentasPage />} />
+
+        {/* USUARIOS (se conserva, sin endpoint para evitar error) */}
+        <Route path="/usuarios" element={<TablePage title="Usuarios" />} />
+        <Route path="/usuarios/nuevo" element={<TablePage title="Crear usuario" />} />
+        <Route path="/usuarios/roles" element={<TablePage title="Roles / Permisos" />} />
       </Route>
 
-      <Route path="*" element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />} />
+      {/* 404 */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
