@@ -1,4 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿// src/pages/TablePage.tsx
+import { useEffect, useMemo, useState } from "react";
 import { API_URL } from "../config/api";
 
 type Props = {
@@ -76,9 +77,7 @@ export default function TablePage({ title, path }: Props) {
         }}
       >
         <div>
-          <h1 style={{ marginTop: 0, marginBottom: 6, fontSize: 44 }}>
-            {title}
-          </h1>
+          <h1 style={{ marginTop: 0, marginBottom: 6, fontSize: 44 }}>{title}</h1>
           <p style={{ opacity: 0.75, marginTop: 0 }}>
             Vista en tabla para entender los datos mejor.
           </p>
@@ -89,7 +88,7 @@ export default function TablePage({ title, path }: Props) {
         </div>
       </div>
 
-      {/* Barra bÃºsqueda */}
+      {/* Barra búsqueda */}
       <div
         style={{
           display: "flex",
@@ -126,7 +125,6 @@ export default function TablePage({ title, path }: Props) {
         </div>
       </div>
 
-      {/* Estados */}
       {loading && <p style={{ marginTop: 8 }}>Cargando...</p>}
 
       {err && (
@@ -140,7 +138,6 @@ export default function TablePage({ title, path }: Props) {
         </div>
       )}
 
-      {/* Tabla en tarjeta simple (NO redonda gigante) */}
       {!loading && !err && (
         <div
           style={{
@@ -201,6 +198,3 @@ export default function TablePage({ title, path }: Props) {
     </div>
   );
 }
-
-
-
