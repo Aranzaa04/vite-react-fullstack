@@ -26,7 +26,7 @@ export default function AppLayout() {
       <header
         style={{
           height: 58,
-          background: "#667EEA",
+          background: "#fff",
           borderBottom: "1px solid rgba(0,0,0,0.08)",
           display: "flex",
           alignItems: "center",
