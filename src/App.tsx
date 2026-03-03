@@ -14,6 +14,7 @@ import ProveedoresPage from "./pages/ProveedoresPage";
 import InventarioPage from "./pages/InventarioPage";
 import CompraPage from "./pages/CompraPage";
 import VentasPage from "./pages/VentasPage";
+import CreateUserPage from "./pages/CreateUserPage";
 
 import TablePage from "./pages/TablePage";
 
@@ -56,7 +57,7 @@ export default function App() {
         <Route path="/usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
         <Route
           path="/usuarios/nuevo"
-          element={<TablePage title="Crear usuario" path="/api/usuarios" />}
+          element={<CreateUserPage />}
         />
         <Route
           path="/usuarios/roles"
