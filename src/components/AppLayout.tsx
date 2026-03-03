@@ -26,7 +26,7 @@ export default function AppLayout() {
       <header
         style={{
           height: 58,
-          background: "#fff",
+          background: "#667EEA",
           borderBottom: "1px solid rgba(0,0,0,0.08)",
           display: "flex",
           alignItems: "center",
@@ -79,7 +79,7 @@ export default function AppLayout() {
           </div>
 
           <NavLink to="/home" style={linkStyle}>
-            Inicio
+            🏠Inicio
           </NavLink>
 
           <div style={{ marginTop: 10, fontSize: 12, opacity: 0.65, fontWeight: 800, marginLeft: 8 }}>
@@ -87,19 +87,19 @@ export default function AppLayout() {
           </div>
 
           <NavLink to="/proveedores" style={linkStyle}>
-            Proveedores
+            🚚Proveedores
           </NavLink>
 
           <NavLink to="/inventario" style={linkStyle}>
-            Inventario
+            📦Inventario
           </NavLink>
 
           <NavLink to="/compra" style={linkStyle}>
-            Compra
+            🛍️Compra
           </NavLink>
 
           <NavLink to="/ventas" style={linkStyle}>
-            Ventas
+            🖥️Ventas
           </NavLink>
 
           <div style={{ marginTop: 10, fontSize: 12, opacity: 0.65, fontWeight: 800, marginLeft: 8 }}>
@@ -107,11 +107,11 @@ export default function AppLayout() {
           </div>
 
           <NavLink to="/usuarios" style={linkStyle}>
-            Usuarios
+            👥Usuarios
           </NavLink>
 
           <NavLink to="/usuarios/nuevo" style={linkStyle}>
-            Crear usuario
+            👤Crear usuario
           </NavLink>
 
           {/* ESCUPELUPE COMMENTS: descomenta este bloque para reactivar Roles / Permisos
