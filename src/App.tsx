@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-// Páginas
+// Páginas base
 import LoginPage from "./pages/LoginPage";
 import Home from "./pages/Home";
 
@@ -14,7 +14,7 @@ import InventarioPage from "./pages/InventarioPage";
 import CompraPage from "./pages/CompraPage";
 import VentasPage from "./pages/VentasPage";
 
-// Usuarios (NO lo quitamos)
+// Usuarios (se conserva)
 import TablePage from "./pages/TablePage";
 
 function isLoggedIn() {
@@ -43,18 +43,25 @@ export default function App() {
           </ProtectedRoute>
         }
       >
+        {/* Home */}
         <Route path="/home" element={<Home />} />
 
-        {/* NUEVO */}
+        {/* StockUp */}
         <Route path="/proveedores" element={<ProveedoresPage />} />
         <Route path="/inventario" element={<InventarioPage />} />
         <Route path="/compra" element={<CompraPage />} />
         <Route path="/ventas" element={<VentasPage />} />
 
-        {/* USUARIOS (se conserva, sin endpoint para evitar error) */}
-        <Route path="/usuarios" element={<TablePage title="Usuarios" />} />
-        <Route path="/usuarios/nuevo" element={<TablePage title="Crear usuario" />} />
-        <Route path="/usuarios/roles" element={<TablePage title="Roles / Permisos" />} />
+        {/* USUARIOS (se conserva) */}
+        <Route path="/usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
+        <Route
+          path="/usuarios/nuevo"
+          element={<TablePage title="Crear usuario" path="/api/usuarios" />}
+        />
+        <Route
+          path="/usuarios/roles"
+          element={<TablePage title="Roles / Permisos" path="/api/usuarios" />}
+        />
       </Route>
 
       {/* 404 */}
