@@ -79,7 +79,7 @@ export default function LoginPage() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>ShokUp</h1>
+        <h1>StockUp</h1>
         <h2>{isLogin ? "Iniciar Sesión" : "Crear Cuenta"}</h2>
 
         {displayError && <div className="error-message">{displayError}</div>}
