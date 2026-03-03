@@ -1,330 +1,124 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../services/apiClient";
 
-type Proveedor = {
+type InventarioItem = {
   id: number;
-  marca: string;
-  fecha_entrada: string;
-  creado_en: string;
-};
-
-type Entrada = {
-  id: number;
-  proveedor_id: number;
-  inventario_id: number | null;
   tipo: string;
   peso: number | null;
+  precio: number;
   cantidad: number;
-  creado_en: string;
-  inventario_precio?: number | null;
-  inventario_stock?: number | null;
 };
 
-export default function ProveedoresPage() {
-  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+function toNumber(v: any, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+export default function InventarioPage() {
+  const [rows, setRows] = useState<InventarioItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [query, setQuery] = useState("");
 
-  const [marca, setMarca] = useState("");
-  const [fechaEntrada, setFechaEntrada] = useState("");
+  // Para edición rápida (precio / peso)
+  const [edit, setEdit] = useState<Record<number, { precio?: string; peso?: string }>>({});
 
-  const [selectedId, setSelectedId] = useState<number | "">("");
-  const [entradas, setEntradas] = useState<Entrada[]>([]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((r) => {
+      return (
+        String(r.id).includes(q) ||
+        (r.tipo || "").toLowerCase().includes(q)
+      );
+    });
+  }, [rows, query]);
 
-  const [tipo, setTipo] = useState("");
-  const [peso, setPeso] = useState<string>("");
-  const [cantidad, setCantidad] = useState<number>(1);
-
-  const selectedProveedor = useMemo(
-    () => proveedores.find((p) => p.id === selectedId) || null,
-    [proveedores, selectedId]
-  );
-
-  async function loadProveedores() {
-    setLoading(true);
-    setErr("");
+  async function load() {
     try {
-      const data = await api<Proveedor[]>("/proveedores");
-      setProveedores(data);
+      setLoading(true);
+      setErr("");
+      // all=1 para traer también los de cantidad 0 si quieres ver todo
+      const data = await api<InventarioItem[]>("/inventario?all=1");
+      setRows(Array.isArray(data) ? data : []);
     } catch (e: any) {
-      setErr(e.message || "Error cargando proveedores");
+      setErr(e?.message || "Error al cargar inventario");
     } finally {
       setLoading(false);
     }
   }
 
-  async function loadProveedorDetalle(id: number) {
-    setErr("");
-    try {
-      const data = await api<{ proveedor: Proveedor; entradas: Entrada[] }>(
-        `/proveedores/${id}`
-      );
-      setEntradas(data.entradas);
-    } catch (e: any) {
-      setErr(e.message || "Error cargando detalle");
-      setEntradas([]);
-    }
-  }
-
   useEffect(() => {
-    loadProveedores();
+    load();
   }, []);
 
-  useEffect(() => {
-    if (typeof selectedId === "number") {
-      loadProveedorDetalle(selectedId);
-    } else {
-      setEntradas([]);
-    }
-  }, [selectedId]);
-
-  async function crearProveedor(e: React.FormEvent) {
-    e.preventDefault();
-    setErr("");
-
-    const payload: any = { marca: marca.trim() };
-    if (fechaEntrada.trim()) payload.fecha_entrada = fechaEntrada;
-
+  async function saveRow(id: number) {
     try {
-      const nuevo = await api<Proveedor>("/proveedores", {
-        method: "POST",
-        body: JSON.stringify(payload),
+      const current = rows.find((r) => r.id === id);
+      if (!current) return;
+
+      const precioStr = edit[id]?.precio;
+      const pesoStr = edit[id]?.peso;
+
+      // Si no editaste nada, no hace nada
+      const precio = precioStr !== undefined ? toNumber(precioStr, current.precio) : current.precio;
+      const peso =
+        pesoStr !== undefined
+          ? (pesoStr.trim() === "" ? null : toNumber(pesoStr, current.peso ?? 0))
+          : current.peso;
+
+      await api(`/inventario/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          tipo: current.tipo,
+          precio,
+          peso,
+          // no tocamos cantidad aquí (se mueve por entradas y ventas)
+          cantidad: current.cantidad,
+        }),
       });
 
-      setMarca("");
-      setFechaEntrada("");
-      await loadProveedores();
-      setSelectedId(nuevo.id);
-    } catch (e: any) {
-      setErr(e.message || "Error creando proveedor");
-    }
-  }
+      // refrescar
+      await load();
 
-  async function agregarEntrada(e: React.FormEvent) {
-    e.preventDefault();
-    setErr("");
-
-    if (typeof selectedId !== "number") {
-      setErr("Selecciona un proveedor");
-      return;
-    }
-    if (!tipo.trim()) {
-      setErr("Escribe el tipo de producto");
-      return;
-    }
-    if (!Number.isFinite(cantidad) || cantidad <= 0) {
-      setErr("Cantidad inválida");
-      return;
-    }
-
-    const item: any = {
-      tipo: tipo.trim(),
-      cantidad,
-    };
-    if (peso.trim() !== "") item.peso = Number(peso);
-
-    try {
-      await api(`/proveedores/${selectedId}/entradas`, {
-        method: "POST",
-        body: JSON.stringify({ items: [item] }),
+      // limpiar edición
+      setEdit((prev) => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
       });
-
-      setTipo("");
-      setPeso("");
-      setCantidad(1);
-
-      await loadProveedorDetalle(selectedId);
     } catch (e: any) {
-      setErr(e.message || "Error agregando entrada");
+      alert(e?.message || "Error al guardar");
     }
   }
 
   return (
     <div style={{ width: "100%" }}>
-      <h1 style={{ marginTop: 0, marginBottom: 10, fontSize: 40 }}>
-        🚚 Proveedores
-      </h1>
-
-      {loading && <p>Cargando...</p>}
-      {err && (
-        <div style={{ color: "#b00020", marginBottom: 10 }}>
-          <b>Error:</b> {err}
-        </div>
-      )}
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        {/* Crear proveedor */}
-        <div
-          style={{
-            background: "white",
-            border: "1px solid rgba(0,0,0,0.10)",
-            borderRadius: 8,
-            padding: 14,
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>Crear proveedor</h2>
-          <form onSubmit={crearProveedor} style={{ display: "grid", gap: 10 }}>
-            <input
-              value={marca}
-              onChange={(e) => setMarca(e.target.value)}
-              placeholder="Marca (ej. Nike)"
-              style={{ padding: 10, borderRadius: 8, border: "1px solid rgba(0,0,0,0.2)" }}
-            />
-            <input
-              value={fechaEntrada}
-              onChange={(e) => setFechaEntrada(e.target.value)}
-              placeholder="Fecha entrada (opcional) ej: 2026-03-02"
-              style={{ padding: 10, borderRadius: 8, border: "1px solid rgba(0,0,0,0.2)" }}
-            />
-            <button
-              type="submit"
-              style={{
-                padding: 10,
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.2)",
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
-            >
-              Crear
-            </button>
-          </form>
+      {/* HEADER */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          gap: 12,
+          flexWrap: "wrap",
+          marginBottom: 10,
+        }}
+      >
+        <div>
+          <h1 style={{ marginTop: 0, marginBottom: 6, fontSize: 44 }}>📦 Inventario</h1>
+          <p style={{ opacity: 0.75, marginTop: 0 }}>
+            Aquí se ven <b>todos los productos</b> en stock (sin importar proveedor).
+          </p>
         </div>
 
-        {/* Selección y entrada */}
-        <div
-          style={{
-            background: "white",
-            border: "1px solid rgba(0,0,0,0.10)",
-            borderRadius: 8,
-            padding: 14,
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>Entrada de productos</h2>
-
-          <div style={{ display: "grid", gap: 10, marginBottom: 10 }}>
-            <select
-              value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value ? Number(e.target.value) : "")}
-              style={{ padding: 10, borderRadius: 8, border: "1px solid rgba(0,0,0,0.2)" }}
-            >
-              <option value="">-- Selecciona proveedor --</option>
-              {proveedores.map((p) => (
-                <option key={p.id} value={p.id}>
-                  #{p.id} {p.marca}
-                </option>
-              ))}
-            </select>
-
-            {selectedProveedor && (
-              <div style={{ fontSize: 13, opacity: 0.8 }}>
-                Seleccionado: <b>{selectedProveedor.marca}</b> —{" "}
-                {new Date(selectedProveedor.fecha_entrada).toLocaleString()}
-              </div>
-            )}
-          </div>
-
-          <form onSubmit={agregarEntrada} style={{ display: "grid", gap: 10 }}>
-            <input
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              placeholder="Tipo (ej. Camisa)"
-              style={{ padding: 10, borderRadius: 8, border: "1px solid rgba(0,0,0,0.2)" }}
-            />
-            <input
-              value={peso}
-              onChange={(e) => setPeso(e.target.value)}
-              placeholder="Peso (opcional) ej. 0.3"
-              style={{ padding: 10, borderRadius: 8, border: "1px solid rgba(0,0,0,0.2)" }}
-            />
-            <input
-              type="number"
-              value={cantidad}
-              onChange={(e) => setCantidad(Number(e.target.value))}
-              min={1}
-              placeholder="Cantidad"
-              style={{ padding: 10, borderRadius: 8, border: "1px solid rgba(0,0,0,0.2)" }}
-            />
-
-            <button
-              type="submit"
-              style={{
-                padding: 10,
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.2)",
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
-            >
-              Agregar entrada
-            </button>
-          </form>
-        </div>
-      </div>
-
-      {/* Entradas del proveedor */}
-      <div style={{ marginTop: 14 }}>
-        <h2 style={{ marginBottom: 8 }}>Entradas del proveedor</h2>
-        <div
-          style={{
-            background: "white",
-            border: "1px solid rgba(0,0,0,0.10)",
-            borderRadius: 8,
-            padding: 14,
-            overflowX: "auto",
-          }}
-        >
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
-            <thead>
-              <tr>
-                {["id", "tipo", "peso", "cantidad", "inventario_id", "stock", "precio", "creado_en"].map((c) => (
-                  <th
-                    key={c}
-                    style={{ textAlign: "left", padding: 10, borderBottom: "1px solid rgba(0,0,0,0.12)" }}
-                  >
-                    {c}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {entradas.map((e) => (
-                <tr key={e.id}>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{e.id}</td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{e.tipo}</td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{String(e.peso ?? "")}</td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{e.cantidad}</td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{String(e.inventario_id ?? "")}</td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                    {String(e.inventario_stock ?? "")}
-                  </td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                    {String(e.inventario_precio ?? "")}
-                  </td>
-                  <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                    {new Date(e.creado_en).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-              {entradas.length === 0 && (
-                <tr>
-                  <td colSpan={8} style={{ padding: 12, opacity: 0.75 }}>
-                    No hay entradas. Selecciona un proveedor y agrega productos.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 12 }}>
         <button
-          onClick={loadProveedores}
+          onClick={load}
           style={{
             padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid rgba(0,0,0,0.2)",
+            borderRadius: 10,
+            border: "1px solid rgba(0,0,0,0.12)",
+            background: "rgba(0,0,0,0.04)",
             cursor: "pointer",
             fontWeight: 700,
           }}
@@ -332,6 +126,181 @@ export default function ProveedoresPage() {
           🔄 Recargar
         </button>
       </div>
+
+      {/* BUSCADOR */}
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          flexWrap: "wrap",
+          alignItems: "center",
+          marginBottom: 12,
+        }}
+      >
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar por id o tipo..."
+          style={{
+            flex: 1,
+            minWidth: 260,
+            padding: "10px 12px",
+            borderRadius: 10,
+            border: "1px solid rgba(0,0,0,0.15)",
+            background: "rgba(0,0,0,0.04)",
+            color: "#0b1320",
+            outline: "none",
+          }}
+        />
+        <div
+          style={{
+            padding: "10px 12px",
+            borderRadius: 10,
+            border: "1px solid rgba(0,0,0,0.12)",
+            background: "rgba(0,0,0,0.04)",
+          }}
+        >
+          Registros: <b>{filtered.length}</b>
+        </div>
+      </div>
+
+      {/* ESTADOS */}
+      {loading && <p style={{ marginTop: 8 }}>Cargando...</p>}
+
+      {err && (
+        <div style={{ marginTop: 8, color: "#b00020" }}>
+          <div>
+            <b>Error</b>
+          </div>
+          <div style={{ marginTop: 6 }}>{err}</div>
+        </div>
+      )}
+
+      {/* TABLA */}
+      {!loading && !err && (
+        <div
+          style={{
+            background: "white",
+            border: "1px solid rgba(0,0,0,0.10)",
+            borderRadius: 6,
+            padding: 14,
+          }}
+        >
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+              <thead>
+                <tr>
+                  {["id", "tipo", "peso", "precio", "cantidad", "acciones"].map((c) => (
+                    <th
+                      key={c}
+                      style={{
+                        textAlign: "left",
+                        padding: 10,
+                        borderBottom: "1px solid rgba(0,0,0,0.12)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {c}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {filtered.map((r) => {
+                  const precioVal = edit[r.id]?.precio ?? String(r.precio ?? 0);
+                  const pesoVal = edit[r.id]?.peso ?? (r.peso === null || r.peso === undefined ? "" : String(r.peso));
+
+                  return (
+                    <tr key={r.id}>
+                      <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                        {r.id}
+                      </td>
+
+                      <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)", fontWeight: 700 }}>
+                        {r.tipo}
+                      </td>
+
+                      <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                        <input
+                          value={pesoVal}
+                          onChange={(e) =>
+                            setEdit((prev) => ({
+                              ...prev,
+                              [r.id]: { ...(prev[r.id] || {}), peso: e.target.value },
+                            }))
+                          }
+                          placeholder="(opcional)"
+                          style={{
+                            width: 120,
+                            padding: "8px 10px",
+                            borderRadius: 10,
+                            border: "1px solid rgba(0,0,0,0.15)",
+                            background: "rgba(0,0,0,0.04)",
+                            outline: "none",
+                          }}
+                        />
+                      </td>
+
+                      <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                        <input
+                          value={precioVal}
+                          onChange={(e) =>
+                            setEdit((prev) => ({
+                              ...prev,
+                              [r.id]: { ...(prev[r.id] || {}), precio: e.target.value },
+                            }))
+                          }
+                          style={{
+                            width: 120,
+                            padding: "8px 10px",
+                            borderRadius: 10,
+                            border: "1px solid rgba(0,0,0,0.15)",
+                            background: "rgba(0,0,0,0.04)",
+                            outline: "none",
+                          }}
+                        />
+                      </td>
+
+                      <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                        <b>{r.cantidad}</b>
+                      </td>
+
+                      <td style={{ padding: 10, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                        <button
+                          onClick={() => saveRow(r.id)}
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: 10,
+                            border: "1px solid rgba(0,0,0,0.15)",
+                            background: "rgba(0,0,0,0.04)",
+                            cursor: "pointer",
+                            fontWeight: 800,
+                          }}
+                        >
+                          Guardar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={6} style={{ padding: 12, opacity: 0.75 }}>
+                      No hay productos.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginTop: 10, fontSize: 13, opacity: 0.7 }}>
+            Nota: La <b>cantidad</b> se mueve por <b>entradas</b> (proveedores) y por <b>ventas</b> (compra).
+          </div>
+        </div>
+      )}
     </div>
   );
 }
