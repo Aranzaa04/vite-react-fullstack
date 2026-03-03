@@ -2,6 +2,7 @@ import { api } from "./apiClient";
 
 export type Note = {
   id: string;
+  user_id: number;
   text: string;
   color: string;
 };

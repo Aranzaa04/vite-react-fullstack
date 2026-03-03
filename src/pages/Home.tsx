@@ -62,7 +62,7 @@ const actionButtonStyle: React.CSSProperties = {
 };
 
 export default function Home() {
-  const { token } = useAuth();
+  const { token, usuario } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [draft, setDraft] = useState("");
   const [selectedColor, setSelectedColor] = useState(noteColors[0]);
@@ -324,22 +324,38 @@ export default function Home() {
                   }}
                 >
                   <p style={{ margin: 0, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{note.text}</p>
-                  <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-                    <button
-                      type="button"
-                      onClick={() => handleEditNote(note)}
-                      style={{ ...actionButtonStyle, background: "rgba(255,255,255,0.7)", color: "#0b1320" }}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void handleDeleteNote(note.id)}
-                      disabled={isSaving}
-                      style={{ ...actionButtonStyle, background: "rgba(11,19,32,0.9)", color: "#ffffff" }}
-                    >
-                      Eliminar
-                    </button>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 10,
+                      marginTop: 14,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span style={{ fontSize: 12, color: "rgba(11,19,32,0.65)", fontWeight: 700 }}>
+                      {note.user_id === usuario?.id ? "Tu nota" : "Nota compartida"}
+                    </span>
+                    {note.user_id === usuario?.id ? (
+                      <div style={{ display: "flex", gap: 10 }}>
+                        <button
+                          type="button"
+                          onClick={() => handleEditNote(note)}
+                          style={{ ...actionButtonStyle, background: "rgba(255,255,255,0.7)", color: "#0b1320" }}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteNote(note.id)}
+                          disabled={isSaving}
+                          style={{ ...actionButtonStyle, background: "rgba(11,19,32,0.9)", color: "#ffffff" }}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 </article>
               ))
