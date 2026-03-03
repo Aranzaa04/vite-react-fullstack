@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+import { useAuth } from "../context/AuthContext";
+import { notesService, type Note } from "../services/notesService";
 
-type Note = {
-  id: string;
-  text: string;
-  color: string;
-};
-
-const NOTE_STORAGE_KEY = "dashboard-notes";
 const noteColors = ["#fce7f3", "#fde68a", "#dbeafe", "#dcfce7", "#e9d5ff"];
 
 const pageStyle: React.CSSProperties = {
@@ -67,30 +62,38 @@ const actionButtonStyle: React.CSSProperties = {
 };
 
 export default function Home() {
+  const { token } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [draft, setDraft] = useState("");
   const [selectedColor, setSelectedColor] = useState(noteColors[0]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
+  const [isLoadingNotes, setIsLoadingNotes] = useState(true);
 
   useEffect(() => {
-    const savedNotes = window.localStorage.getItem(NOTE_STORAGE_KEY);
-    if (!savedNotes) {
+    if (!token) {
+      setNotes([]);
+      setIsLoadingNotes(false);
       return;
     }
 
-    try {
-      const parsedNotes = JSON.parse(savedNotes) as Note[];
-      if (Array.isArray(parsedNotes)) {
-        setNotes(parsedNotes);
+    const loadNotes = async () => {
+      try {
+        setIsLoadingNotes(true);
+        setNotesError(null);
+        const fetchedNotes = await notesService.getAll(token);
+        setNotes(fetchedNotes);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "No se pudieron cargar las notas";
+        setNotesError(message);
+      } finally {
+        setIsLoadingNotes(false);
       }
-    } catch {
-      window.localStorage.removeItem(NOTE_STORAGE_KEY);
-    }
-  }, []);
+    };
 
-  useEffect(() => {
-    window.localStorage.setItem(NOTE_STORAGE_KEY, JSON.stringify(notes));
-  }, [notes]);
+    void loadNotes();
+  }, [token]);
 
   const resetForm = () => {
     setDraft("");
@@ -98,31 +101,47 @@ export default function Home() {
     setEditingId(null);
   };
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
+    if (!token) {
+      setNotesError("No hay una sesión activa para guardar notas");
+      return;
+    }
+
     const text = draft.trim();
     if (!text) {
       return;
     }
 
-    if (editingId) {
-      setNotes((currentNotes) =>
-        currentNotes.map((note) =>
-          note.id === editingId ? { ...note, text, color: selectedColor } : note,
-        ),
-      );
-      resetForm();
-      return;
-    }
+    try {
+      setIsSaving(true);
+      setNotesError(null);
 
-    setNotes((currentNotes) => [
-      {
-        id: crypto.randomUUID(),
+      if (editingId) {
+        const updatedNote = await notesService.update(token, editingId, {
+          text,
+          color: selectedColor,
+        });
+
+        setNotes((currentNotes) =>
+          currentNotes.map((note) => (note.id === editingId ? updatedNote : note)),
+        );
+        resetForm();
+        return;
+      }
+
+      const createdNote = await notesService.create(token, {
         text,
         color: selectedColor,
-      },
-      ...currentNotes,
-    ]);
-    resetForm();
+      });
+
+      setNotes((currentNotes) => [createdNote, ...currentNotes]);
+      resetForm();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "No se pudo guardar la nota";
+      setNotesError(message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEditNote = (note: Note) => {
@@ -131,10 +150,25 @@ export default function Home() {
     setEditingId(note.id);
   };
 
-  const handleDeleteNote = (noteId: string) => {
-    setNotes((currentNotes) => currentNotes.filter((note) => note.id !== noteId));
-    if (editingId === noteId) {
-      resetForm();
+  const handleDeleteNote = async (noteId: string) => {
+    if (!token) {
+      setNotesError("No hay una sesión activa para eliminar notas");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setNotesError(null);
+      await notesService.remove(token, noteId);
+      setNotes((currentNotes) => currentNotes.filter((note) => note.id !== noteId));
+      if (editingId === noteId) {
+        resetForm();
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "No se pudo eliminar la nota";
+      setNotesError(message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -217,15 +251,17 @@ export default function Home() {
           <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
             <button
               type="button"
-              onClick={handleSaveNote}
+              onClick={() => void handleSaveNote()}
+              disabled={isSaving || !token}
               style={{ ...actionButtonStyle, background: "#0f172a", color: "#ffffff" }}
             >
-              {editingId ? "Guardar cambios" : "Agregar nota"}
+              {isSaving ? "Guardando..." : editingId ? "Guardar cambios" : "Agregar nota"}
             </button>
             {editingId ? (
               <button
                 type="button"
                 onClick={resetForm}
+                disabled={isSaving}
                 style={{
                   ...actionButtonStyle,
                   background: "#ffffff",
@@ -238,8 +274,34 @@ export default function Home() {
             ) : null}
           </div>
 
+          {notesError ? (
+            <div
+              style={{
+                borderRadius: 12,
+                background: "#fee2e2",
+                border: "1px solid #fecaca",
+                color: "#991b1b",
+                padding: "10px 12px",
+                marginBottom: 18,
+              }}
+            >
+              {notesError}
+            </div>
+          ) : null}
+
           <div style={{ display: "grid", gap: 12 }}>
-            {notes.length === 0 ? (
+            {isLoadingNotes ? (
+              <div
+                style={{
+                  borderRadius: 14,
+                  border: "1px dashed rgba(0,0,0,0.14)",
+                  padding: 18,
+                  color: "rgba(11,19,32,0.6)",
+                }}
+              >
+                Cargando notas...
+              </div>
+            ) : notes.length === 0 ? (
               <div
                 style={{
                   borderRadius: 14,
@@ -272,7 +334,8 @@ export default function Home() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDeleteNote(note.id)}
+                      onClick={() => void handleDeleteNote(note.id)}
+                      disabled={isSaving}
                       style={{ ...actionButtonStyle, background: "rgba(11,19,32,0.9)", color: "#ffffff" }}
                     >
                       Eliminar
