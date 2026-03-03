@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import AppLayout from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 
 // Páginas base
 import LoginPage from "./pages/LoginPage";
@@ -13,26 +14,26 @@ import ProveedoresPage from "./pages/ProveedoresPage";
 import InventarioPage from "./pages/InventarioPage";
 import CompraPage from "./pages/CompraPage";
 import VentasPage from "./pages/VentasPage";
+import CreateUserPage from "./pages/CreateUserPage";
 
-// Usuarios (se conserva)
 import TablePage from "./pages/TablePage";
 
-function isLoggedIn() {
-  return Boolean(localStorage.getItem("token"));
-}
-
 export default function App() {
-  const authed = isLoggedIn();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Routes>
       {/* ROOT */}
-      <Route path="/" element={<Navigate to={authed ? "/home" : "/login"} replace />} />
+      <Route path="/" element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />} />
 
       {/* LOGIN */}
       <Route
         path="/login"
-        element={authed ? <Navigate to="/home" replace /> : <LoginPage />}
+        element={isAuthenticated ? <Navigate to="/home" replace /> : <LoginPage />}
       />
 
       {/* ÁREA PROTEGIDA */}
@@ -56,12 +57,14 @@ export default function App() {
         <Route path="/usuarios" element={<TablePage title="Usuarios" path="/api/usuarios" />} />
         <Route
           path="/usuarios/nuevo"
-          element={<TablePage title="Crear usuario" path="/api/usuarios" />}
+          element={<CreateUserPage />}
         />
+        {/* ESCUPELUPE COMMENTS: descomenta este bloque para reactivar la ruta de Roles / Permisos
         <Route
           path="/usuarios/roles"
           element={<TablePage title="Roles / Permisos" path="/api/usuarios" />}
         />
+        */}
       </Route>
 
       {/* 404 */}

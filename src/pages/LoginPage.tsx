@@ -4,16 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/LoginPage.css";
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    nombre: "",
   });
   const [localError, setLocalError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, register, error } = useAuth();
+  const { login, error } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,22 +25,17 @@ export default function LoginPage() {
 
   const validateForm = (): boolean => {
     if (!formData.email || !formData.password) {
-      setLocalError("Email y contraseña son requeridos");
+      setLocalError("Email y contrasena son requeridos");
       return false;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setLocalError("Por favor ingresa un email válido");
+      setLocalError("Por favor ingresa un email valido");
       return false;
     }
 
     if (formData.password.length < 6) {
-      setLocalError("La contraseña debe tener al menos 6 caracteres");
-      return false;
-    }
-
-    if (!isLogin && !formData.nombre) {
-      setLocalError("El nombre es requerido");
+      setLocalError("La contrasena debe tener al menos 6 caracteres");
       return false;
     }
 
@@ -59,15 +52,9 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      if (isLogin) {
-        await login(formData.email, formData.password);
-      } else {
-        await register(formData.email, formData.password, formData.nombre);
-      }
-      // Redirigir al dashboard después del login/registro exitoso
+      await login(formData.email, formData.password);
       navigate("/home");
     } catch (err) {
-      // El error ya está en el contexto
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -79,8 +66,8 @@ export default function LoginPage() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>ShokUp</h1>
-        <h2>{isLogin ? "Iniciar Sesión" : "Crear Cuenta"}</h2>
+        <h1>StockUp</h1>
+        <h2>Iniciar sesion</h2>
 
         {displayError && <div className="error-message">{displayError}</div>}
 
@@ -99,62 +86,24 @@ export default function LoginPage() {
             />
           </div>
 
-          {!isLogin && (
-            <div className="form-group">
-              <label htmlFor="nombre">Nombre Completo</label>
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleInputChange}
-                placeholder="Juan Pérez"
-                disabled={isSubmitting}
-                autoComplete="name"
-              />
-            </div>
-          )}
-
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">Contrasena</label>
             <input
               type="password"
               id="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              placeholder="••••••"
+              placeholder="******"
               disabled={isSubmitting}
-              autoComplete={isLogin ? "current-password" : "new-password"}
+              autoComplete="current-password"
             />
           </div>
 
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Cargando..." : isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
+          <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {isSubmitting ? "Cargando..." : "Iniciar sesion"}
           </button>
         </form>
-
-        <div className="toggle-auth">
-          <p>
-            {isLogin ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}
-            <button
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setFormData({ email: "", password: "", nombre: "" });
-                setLocalError(null);
-              }}
-              disabled={isSubmitting}
-              className="toggle-button"
-            >
-              {isLogin ? "Regístrate" : "Inicia Sesión"}
-            </button>
-          </p>
-        </div>
       </div>
     </div>
   );

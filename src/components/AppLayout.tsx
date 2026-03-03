@@ -1,5 +1,5 @@
-// src/components/AppLayout.tsx
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const linkStyle = ({ isActive }: { isActive: boolean }) => ({
   display: "block",
@@ -13,9 +13,16 @@ const linkStyle = ({ isActive }: { isActive: boolean }) => ({
 });
 
 export default function AppLayout() {
+  const navigate = useNavigate();
+  const { logout, usuario } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#f5f6f8" }}>
-      {/* TOPBAR */}
       <header
         style={{
           height: 58,
@@ -25,12 +32,31 @@ export default function AppLayout() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 16px",
+          gap: 12,
         }}
       >
         <div style={{ fontWeight: 900, fontSize: 18 }}>StockUp</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(0,0,0,0.7)" }}>
+            {usuario?.nombre || usuario?.email || "Sesion activa"}
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: "1px solid rgba(0,0,0,0.12)",
+              background: "#fff",
+              cursor: "pointer",
+              fontWeight: 700,
+            }}
+          >
+            Cerrar sesion
+          </button>
+        </div>
       </header>
 
-      {/* BODY */}
       <div
         style={{
           display: "grid",
@@ -39,7 +65,6 @@ export default function AppLayout() {
           padding: 16,
         }}
       >
-        {/* SIDEBAR */}
         <aside
           style={{
             background: "#fff",
@@ -50,55 +75,52 @@ export default function AppLayout() {
           }}
         >
           <div style={{ fontSize: 12, opacity: 0.65, fontWeight: 800, margin: "6px 8px" }}>
-            MENÚ
+            MENU
           </div>
 
-          {/* Inicio */}
           <NavLink to="/home" style={linkStyle}>
-            🏠 Inicio
+            Inicio
           </NavLink>
 
-          {/* ====== STOCK / VENTAS ====== */}
           <div style={{ marginTop: 10, fontSize: 12, opacity: 0.65, fontWeight: 800, marginLeft: 8 }}>
             STOCK / VENTAS
           </div>
 
           <NavLink to="/proveedores" style={linkStyle}>
-            🚚 Proveedores
+            Proveedores
           </NavLink>
 
           <NavLink to="/inventario" style={linkStyle}>
-            📦 Inventario
+            Inventario
           </NavLink>
 
           <NavLink to="/compra" style={linkStyle}>
-            🛒 Compra
+            Compra
           </NavLink>
 
           <NavLink to="/ventas" style={linkStyle}>
-            🧾 Ventas
+            Ventas
           </NavLink>
 
-          {/* ====== USUARIOS (NO lo quitamos) ====== */}
           <div style={{ marginTop: 10, fontSize: 12, opacity: 0.65, fontWeight: 800, marginLeft: 8 }}>
             USUARIOS
           </div>
 
           <NavLink to="/usuarios" style={linkStyle}>
-            👥 Usuarios
+            Usuarios
           </NavLink>
 
-          {/* Si tus rutas de usuarios son distintas, cambia estos links */}
           <NavLink to="/usuarios/nuevo" style={linkStyle}>
-            ➕ Crear usuario
+            Crear usuario
           </NavLink>
 
+          {/* ESCUPELUPE COMMENTS: descomenta este bloque para reactivar Roles / Permisos
           <NavLink to="/usuarios/roles" style={linkStyle}>
-            🔐 Roles / Permisos
+            Roles / Permisos
           </NavLink>
+          */}
         </aside>
 
-        {/* CONTENT */}
         <main
           style={{
             background: "#fff",
@@ -112,9 +134,8 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* FOOTER */}
       <footer style={{ padding: 14, textAlign: "center", opacity: 0.7, fontWeight: 700 }}>
-        © 2026 StockUp — Proyecto Académico
+        (c) 2026 StockUp - Proyecto academico
       </footer>
     </div>
   );
