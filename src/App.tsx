@@ -59,10 +59,12 @@ export default function App() {
           path="/usuarios/nuevo"
           element={<CreateUserPage />}
         />
+        {/* ESCUPELUPE COMMENTS: descomenta este bloque para reactivar la ruta de Roles / Permisos
         <Route
           path="/usuarios/roles"
           element={<TablePage title="Roles / Permisos" path="/api/usuarios" />}
         />
+        */}
       </Route>
 
       {/* 404 */}

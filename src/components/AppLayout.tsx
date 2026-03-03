@@ -114,9 +114,11 @@ export default function AppLayout() {
             Crear usuario
           </NavLink>
 
+          {/* ESCUPELUPE COMMENTS: descomenta este bloque para reactivar Roles / Permisos
           <NavLink to="/usuarios/roles" style={linkStyle}>
             Roles / Permisos
           </NavLink>
+          */}
         </aside>
 
         <main
