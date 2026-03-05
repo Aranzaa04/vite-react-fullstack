@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { API_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { notesService, type Note } from "../services/notesService";
 
@@ -26,17 +24,6 @@ const panelStyle: React.CSSProperties = {
   padding: 22,
   color: "#0b1320",
   boxShadow: "0 10px 30px rgba(15, 23, 42, 0.06)",
-};
-
-const linkStyle: React.CSSProperties = {
-  display: "block",
-  padding: "10px 12px",
-  borderRadius: 12,
-  border: "1px solid rgba(0,0,0,0.08)",
-  background: "#f8fafc",
-  color: "#0b1320",
-  textDecoration: "none",
-  marginBottom: 10,
 };
 
 const noteInputStyle: React.CSSProperties = {
@@ -175,23 +162,6 @@ export default function Home() {
   return (
     <div style={pageStyle}>
       <div style={layoutStyle}>
-        <section style={panelStyle}>
-          <h2 style={{ marginTop: 0 }}>Panel de datos</h2>
-          <p style={{ color: "rgba(11,19,32,0.7)", marginTop: 6 }}>
-            Vistas en tabla para que se entiendan mejor tus datos.
-          </p>
-
-          <Link to="/inventario" style={linkStyle}>Ver Inventario (tabla)</Link>
-          <Link to="/compra" style={linkStyle}>Ver Compra (tabla)</Link>
-          <Link to="/usuarios" style={linkStyle}>Ver Usuarios (tabla)</Link>
-          <Link to="/ventas" style={linkStyle}>Ver Venta (tabla)</Link>
-          <Link to="/proveedores" style={linkStyle}>Ver Proveedores (tabla)</Link>
-
-          <div style={{ marginTop: 14, fontSize: 13, color: "rgba(11,19,32,0.65)" }}>
-            API base: <code>{API_URL || "(no definido)"}</code>
-          </div>
-        </section>
-
         <section style={panelStyle}>
           <div
             style={{
