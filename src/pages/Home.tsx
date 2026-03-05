@@ -12,7 +12,7 @@ const pageStyle: React.CSSProperties = {
 
 const layoutStyle: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   gap: 20,
   alignItems: "start",
 };
@@ -162,7 +162,7 @@ export default function Home() {
   return (
     <div style={pageStyle}>
       <div style={layoutStyle}>
-        <section style={panelStyle}>
+        <section style={{ ...panelStyle, gridColumn: "1 / 2" }}>
           <div
             style={{
               display: "flex",
